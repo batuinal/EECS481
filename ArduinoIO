@@ -1,0 +1,74 @@
+int FSR_Pin_0 = A0; //analog pin 0
+int FSR_Pin_1 = A1; //analog pin 1
+int FSR_Pin_2 = A2; //analog pin 2
+int FSR_Pin_3 = A3; //analog pin 3
+int FSR_Pin_4 = A4; //analog pin 4
+int FSR_Pin_5 = A5; //analog pin 5
+int FSR_Pin_6 = A6; //analog pin 6
+int FSR_Pin_7 = A7; //analog pin 7
+//assign analog pins
+
+void setup(){
+  Serial.begin(9600);
+}
+
+void loop(){
+  int FSRReading[8] = {analogRead(FSR_Pin_0), analogRead(FSR_Pin_1), analogRead(FSR_Pin_2), analogRead(FSR_Pin_3), analogRead(FSR_Pin_4), analogRead(FSR_Pin_5), analogRead(FSR_Pin_6), analogRead(FSR_Pin_7)};
+  
+  //read the values from the analog pins
+  
+  //the analog values range from 0-1023
+  //if pressed very hard analog reading of around 92
+  //if pressed lightly analog reading of 819
+  //if pressed not light not hard but medium, analog reading of 512
+  //these values may vary depending on manufactured sensor
+  
+  int touch_count = 0; //
+  int hardest_press = 1023; // analog value of the button being pressed, btw 0-1023
+  int button_num = -1; //current button being touched, if -1 invalid input from player, possibly touching multiple buttons
+  
+  for (i = 0; i < 8; i = i + 1){
+    if( FSRReading[i] < 850 ){
+     touch_count = touch_count + 1; 
+    }
+    //checks all read values in FSRReading buffer and compares to const value of 850 to see how many parts of the wall is touched
+    if(hardest_press > FSRReading[i]{
+      hardest_press = FSRReading[i];
+      button_num = i;
+    }
+    //Finds the button being touched with what intensity
+  }
+  
+  if( touch_count == 0){
+    Serial.println(0); 
+  }
+  else if( touch_count > 1){
+   Serial.println(-1); 
+  }
+  //Checks wheter multiple parts of the wall are touched, if so prints -1
+  
+  
+  else{
+    int strength = -1;
+ 
+    if( hardest_press > 650 ){
+     strength = 0; 
+    }
+    else if( hardest_press < 650 && hardest_press > 350  ){
+      strength = 1;
+    }
+    else{
+      strength = 2; 
+    }
+    
+    String output_button = String(button_num);
+    String output_strength = String(strength);
+    String output = (output_button + output_strength);
+    Serial.println(output);
+    //output format is composed of 2 integers, first integer specifies analog pin value second integer value specifies strength of touch, 0 -> low strength 1 -> medium strength, 2 -> hard strength
+    
+  }
+  delay(250); //just here to slow down the output for easier reading
+  //---> this is adjustable according to calibration
+  
+}
